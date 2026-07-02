@@ -433,6 +433,17 @@
         "source": "https://vozer.vn",
         "icon": "https://raw.githubusercontent.com/lethituyen/vbooks-extension/master/vozer/icon.png",
         "description": "Truyện Voz."
+        },
+        {
+        "name": "Tomato novel sync",
+        "author": "Antigravity",
+        "path": "https://raw.githubusercontent.com/ducbui0/ext-book/master/tomato-vbook-ext.zip",
+        "version": 1,
+        "source": "http://localhost:18423",
+        "icon": "https://raw.githubusercontent.com/ducbui0/ext-book/master/tomato-vbook-ext/icon.png",
+        "description": "Đồng bộ và đọc truyện đã tải bằng Tomato Novel Downloader từ máy tính của bạn qua Wi-Fi.",
+        "type": "novel",
+        "locale": "vi_VN"
         }
     ]
 }
