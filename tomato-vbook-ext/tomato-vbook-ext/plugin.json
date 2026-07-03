@@ -1,0 +1,20 @@
+{
+  "metadata": {
+    "name": "Tomato novel sync",
+    "author": "Antigravity",
+    "version": 3,
+    "source": "http://192.168.100.51:18423",
+    "regexp": "https?://(?:www\\.)?fanqie(?:novel)?\\.com/page/(\\d+)",
+    "description": "Đồng bộ và đọc truyện đã tải bằng Tomato Novel Downloader từ máy tính của bạn qua Wi-Fi.",
+    "locale": "vi_VN",
+    "type": "novel",
+    "language": "javascript"
+  },
+  "script": {
+    "home": "home.js",
+    "detail": "detail.js",
+    "toc": "toc.js",
+    "chap": "chap.js",
+    "search": "search.js"
+  }
+}

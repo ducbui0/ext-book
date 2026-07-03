@@ -438,7 +438,7 @@
         "name": "Tomato novel sync",
         "author": "Antigravity",
         "path": "https://raw.githubusercontent.com/ducbui0/ext-book/master/tomato-vbook-ext.zip",
-        "version": 2,
+        "version": 3,
         "source": "http://192.168.100.51:18423",
         "icon": "https://raw.githubusercontent.com/ducbui0/ext-book/master/tomato-vbook-ext/icon.png",
         "description": "Đồng bộ và đọc truyện đã tải bằng Tomato Novel Downloader từ máy tính của bạn qua Wi-Fi.",
