@@ -1,10 +1,7 @@
+load("config.js");
+
 function execute(url) {
-    let host = "http://127.0.0.1:18423";
-    try {
-        if (CONFIG_URL) {
-            host = CONFIG_URL;
-        }
-    } catch(e) {}
+    let host = getHost();
 
     let match = url.match(/reader\/(\d+)\/(\d+)/);
     if (!match) {
@@ -13,7 +10,7 @@ function execute(url) {
     let bookId = match[1];
     let chapId = match[2];
 
-    // 1. Fetch book preview details to get the book name and TOC
+    // 1. Fetch book preview details to get the book name
     let previewResponse = fetch(host + "/api/preview/" + bookId);
     if (!previewResponse.ok) {
         return Response.error("Không thể kết nối đến máy chủ Tomato Downloader hoặc không tìm thấy thông tin truyện.");
@@ -52,46 +49,52 @@ function execute(url) {
         }
     }
 
-    // 3. Try to read from the compiled .txt file in the library (Official Release support)
+    // 3. Try to read from the compiled .txt file using local cache optimization
     if (bookName) {
-        // Fetch book_name.txt
-        let txtUrl = host + "/download/" + encodeURIComponent(bookName) + ".txt";
-        let txtResponse = fetch(txtUrl);
-        if (txtResponse.ok) {
-            let txtContent = txtResponse.text();
-            if (txtContent && currentTitle) {
-                let chapterText = extractChapterFromTxt(txtContent, currentTitle, nextTitle);
-                if (chapterText) {
-                    return Response.success(formatContent(chapterText));
-                }
+        let cacheKey = "tomato_txt_" + bookId;
+        let txtContent = null;
+        try {
+            txtContent = localStorage.getItem(cacheKey);
+        } catch(e) {}
+
+        if (!txtContent) {
+            let txtUrl = host + "/download/" + encodeURIComponent(bookName) + ".txt";
+            let txtResponse = fetch(txtUrl);
+            if (txtResponse.ok) {
+                txtContent = txtResponse.text();
+                clearOldTxtCaches(bookId);
+                try {
+                    localStorage.setItem(cacheKey, txtContent);
+                } catch(e) {}
+            }
+        }
+
+        if (txtContent && currentTitle) {
+            let chapterText = extractChapterFromTxt(txtContent, currentTitle, nextTitle);
+            if (chapterText) {
+                return Response.success(formatContent(chapterText));
             }
         }
     }
 
     // 4. Fallback: Try reading from status.json (Custom Build / Source Build support)
-    let cacheKey = "tomato_cache_" + bookId;
-    let cachedData = null;
-    try {
-        cachedData = localStorage.getItem(cacheKey);
-    } catch(e) {}
-
+    let jsonCacheKey = "tomato_cache_" + bookId;
     let data = null;
-    if (cachedData) {
-        try {
-            data = JSON.parse(cachedData);
-        } catch(e) {}
-    }
+    try {
+        let cachedData = localStorage.getItem(jsonCacheKey);
+        if (cachedData) data = JSON.parse(cachedData);
+    } catch(e) {}
 
     if (!data) {
         let response = fetch(host + "/download/" + bookId + "/status.json");
         if (response.ok) {
             data = response.json();
             try {
-                localStorage.setItem(cacheKey, JSON.stringify(data));
+                localStorage.setItem(jsonCacheKey, JSON.stringify(data));
             } catch(e) {
                 clearOldCaches();
                 try {
-                    localStorage.setItem(cacheKey, JSON.stringify(data));
+                    localStorage.setItem(jsonCacheKey, JSON.stringify(data));
                 } catch(err) {}
             }
         } else if (response.status === 404) {
@@ -120,7 +123,6 @@ function execute(url) {
 function extractChapterFromTxt(txt, currentTitle, nextTitle) {
     let indexCurrent = txt.indexOf(currentTitle);
     if (indexCurrent === -1) {
-        // Fallback case-insensitive
         let txtLower = txt.toLowerCase();
         let titleLower = currentTitle.toLowerCase();
         indexCurrent = txtLower.indexOf(titleLower);
@@ -154,6 +156,19 @@ function formatContent(content) {
         .replace(/&lt;p&gt;/g, "")
         .replace(/&lt;\/p&gt;/g, "<br>")
         .replace(/\r\n|\r|\n/g, "<br><br>");
+}
+
+function clearOldTxtCaches(currentBookId) {
+    try {
+        let keysToRemove = [];
+        for (let i = 0; i < localStorage.length; i++) {
+            let key = localStorage.key(i);
+            if (key && key.indexOf("tomato_txt_") === 0 && key !== "tomato_txt_" + currentBookId) {
+                keysToRemove.push(key);
+            }
+        }
+        keysToRemove.forEach(k => localStorage.removeItem(k));
+    } catch(e) {}
 }
 
 function clearOldCaches() {

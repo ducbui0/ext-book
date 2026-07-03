@@ -1,11 +1,7 @@
-function execute(url) {
-    let host = "http://127.0.0.1:18423";
-    try {
-        if (CONFIG_URL) {
-            host = CONFIG_URL;
-        }
-    } catch(e) {}
+load("config.js");
 
+function execute(url) {
+    let host = getHost();
     let bookId = url.match(/page\/(\d+)/)[1];
     let response = fetch(host + "/api/preview/" + bookId);
     if (response.ok) {

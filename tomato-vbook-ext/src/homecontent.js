@@ -1,11 +1,7 @@
-function execute(url, page) {
-    let host = "http://127.0.0.1:18423";
-    try {
-        if (CONFIG_URL) {
-            host = CONFIG_URL;
-        }
-    } catch(e) {}
+load("config.js");
 
+function execute(url, page) {
+    let host = getHost();
     let response = fetch(url + "?start=false");
     if (response.ok) {
         let data = response.json();
