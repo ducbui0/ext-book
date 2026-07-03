@@ -1,7 +1,10 @@
-load("config.js");
-
 function execute(key, page) {
-    let host = getHost();
+    let host = "http://192.168.100.51:18423";
+    try {
+        if (CONFIG_URL) {
+            host = CONFIG_URL;
+        }
+    } catch(e) {}
 
     let response = fetch(host + "/api/search?q=" + encodeURIComponent(key));
     if (response.ok) {

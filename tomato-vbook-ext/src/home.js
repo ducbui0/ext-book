@@ -1,7 +1,10 @@
-load("config.js");
-
 function execute() {
-    let host = getHost();
+    let host = "http://192.168.100.51:18423";
+    try {
+        if (CONFIG_URL) {
+            host = CONFIG_URL;
+        }
+    } catch(e) {}
     
     return Response.success([
         {
@@ -11,4 +14,3 @@ function execute() {
         }
     ]);
 }
-
