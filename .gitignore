@@ -1,0 +1,16 @@
+# Ignore Python caches
+__pycache__/
+*.pyc
+
+# Ignore logs
+logs/
+*.log
+
+# Ignore downloaded books (folders with numeric names)
+[0-9]*/
+
+# Ignore temp zip
+ngrok.zip
+
+# Ignore specific test scripts
+debug_*.py
